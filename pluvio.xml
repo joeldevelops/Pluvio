@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<vxml version = "2.1" xmlns="http://www.w3.org/2001/vxml">
+<property name="inputmodes" value="dtmf"/>
+  <form>
+    <block>
+      <prompt>
+        Welcome to Pluvio, a voice service to enter or receive rainfall information.
+      </prompt>
+      <goto next="#lang"/>
+    </block>
+  </form>
+
+  <menu id="lang">
+    <prompt>
+      For English, press 1.
+      For French, press 2.
+    </prompt>
+    <choice dtmf="1" next="#mainmenu">
+       English</choice>
+    <choice dtmf="2" next="#mainmenufr">
+       French</choice>
+  </menu>
+
+  <menu id="mainmenu">
+    <prompt>
+      For Mali, press 1.
+      For Burkina Faso, press 2.
+    </prompt>
+    <choice dtmf="1" next="#Mali">
+       Mali</choice>
+    <choice dtmf="2" next="#BF">
+       Burkina Faso</choice>
+  </menu>
+
+  <form id="Mali">
+    <block>
+      <prompt>You selected Mali.</prompt>
+      <goto next="#secondmenu"/>
+    </block>
+  </form>
+
+  <form id="BF">
+    <block>
+      <prompt>You selected Burkina Faso</prompt>
+      <goto next="#secondmenu"/>
+    </block>
+  </form>
+
+  <menu id="secondmenu">
+    <prompt>
+      To enter rainfall measurements, press 1.
+      To receive rainfall information, press 2.
+    </prompt>
+    <choice dtmf="1" next="#enter">
+       Enter measurements</choice>
+    <choice dtmf="2" next="#receive">
+       Receive information</choice>
+  </menu>
+
+  <form id="enter">
+   <field name="measure" type="number">
+    <prompt>You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.</prompt>
+    <filled>
+	<assign name="ml" expr="measure"/>
+	<prompt>You entered <value expr="ml"/> milliliters</prompt>
+    </filled>
+   </field>
+  </form>
+
+  <form id="receive">
+    <block>
+      <prompt>You clicked 2: Receive Information</prompt>
+      <goto next="#thirdmenu"/>
+    </block>
+  </form>
+
+  <menu id="thirdmenu">
+    <prompt>
+      To hear yesterday's measurements, press 1.
+      To hear last week's total measurements, press 2.
+    </prompt>
+    <choice dtmf="1" next="#yesterday">
+       Yesterday</choice>
+    <choice dtmf="2" next="#lastweek">
+       Last Week</choice>
+  </menu>
+
+  <form id="yesterday">
+    <block>
+      <prompt>Yesterday it rained 8 milliliters</prompt>
+    </block>
+  </form>
+
+  <form id="lastweek">
+    <block>
+      <prompt>In the past week it rained 20 milliliters</prompt>
+    </block>
+  </form>
+
+  <menu id="mainmenufr">
+    <prompt>
+      <audio src="./audio_french/PourleMali.wav">
+	Select 1 for Mali and 2 for Burkina Faso.
+      </audio>
+    </prompt>
+    <choice dtmf="1" next="#Malifr">
+       Mali</choice>
+    <choice dtmf="2" next="#BFfr">
+       Burkina Faso</choice>
+  </menu>
+
+   <form id="Malifr">
+    <block>
+      <prompt>
+        <audio src="./audio_french/selectionneMali.wav">
+	  You selected Mali.
+        </audio>
+      </prompt>
+      <goto next="#secondmenufr"/>
+    </block>
+  </form>
+
+  <form id="BFfr">
+    <block>
+      <prompt>
+        <audio src="./audio_french/selectionneBurkina.wav">
+	  You selected Burkina Faso.
+        </audio>
+      </prompt>
+      <goto next="#secondmenufr"/>
+    </block>
+  </form>
+
+  <menu id="secondmenufr">
+    <prompt>
+      <audio src="./audio_french/entermesures.wav">
+	To enter rainfall measurements, press 1.
+      	To receive rainfall information, press 2.
+      </audio>
+    </prompt>
+    <choice dtmf="1" next="#enterfr">
+       Enter measurements</choice>
+    <choice dtmf="2" next="#receivefr">
+       Receive information</choice>
+  </menu>
+
+  <form id="enterfr">
+   <field name="measure" type="number">
+    <prompt>
+      <audio src="./audio_french/clickentrer.wav">
+	You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.
+      </audio>
+    </prompt>
+    <filled>
+	<assign name="ml" expr="measure"/>
+	<prompt>You entered <value expr="ml"/> milliliters</prompt>
+    </filled>
+   </field>
+  </form>
+
+  <form id="receivefr">
+    <block>
+      <prompt>
+        <audio src="./audio_french/click2.wav">
+	  You clicked 2: Receive Information
+        </audio>
+      </prompt>
+      <goto next="#thirdmenufr"/>
+    </block>
+  </form>
+
+  <menu id="thirdmenufr">
+    <prompt>
+      <audio src="./audio_french/entendremesures.wav">
+	To hear yesterday's measurements, press 1.
+        To hear last week's total measurements, press 2.
+      </audio>
+    </prompt>
+    <choice dtmf="1" next="#yesterdayfr">
+       Yesterday</choice>
+    <choice dtmf="2" next="#lastweekfr">
+       Last Week</choice>
+  </menu>
+
+  <form id="yesterdayfr">
+    <block>
+      <prompt>Yesterday it rained 8 milliliters</prompt>
+    </block>
+  </form>
+
+  <form id="lastweekfr">
+    <block>
+      <prompt>In the past week it rained 20 milliliters</prompt>
+    </block>
+  </form>
+
+</vxml>
