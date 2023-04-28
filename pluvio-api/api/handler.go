@@ -3,13 +3,12 @@ package api
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/joeldevelops/Pluvio/pluvio-api/mdb"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (a *API) GetDayRain(c *fiber.Ctx) error {
@@ -61,7 +60,7 @@ func (a *API) dbWriteRainfall(data mdb.Rainfall) (primitive.ObjectID, error) {
 
 	insertResult, err := collection.InsertOne(context.Background(), data)
 	
-	if err != mongo.ErrNilcursor {
+	if err != nil {
 		log.Fatal(err)
 		return primitive.NilObjectID, err
 	}

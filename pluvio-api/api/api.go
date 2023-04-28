@@ -61,7 +61,7 @@ func StartServer(app *fiber.App, mongo *mongo.Client, config Config) {
 		config: config,
 	}
 
-	a.app.setupRoutes()
+	a.setupRoutes()
 
 	log.Println("Starting server on port: " + a.config.Port)
 
