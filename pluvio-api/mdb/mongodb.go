@@ -16,11 +16,6 @@ func ConnectMongo(url string) (*mongo.Client, error) {
 		return nil, err
 	}
 
-	err = client.Connect(nil)
-	if err != nil {
-		return nil, err
-	}
-
 	// Check the connection
 	if err := client.Ping(context.TODO(), nil); err != nil {
 		return nil, err

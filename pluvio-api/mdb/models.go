@@ -1,7 +1,12 @@
 package mdb
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type Rainfall struct {
-	Amount int					`json:"amount" bson:"amount"`
-	Location string			`json:"location" bson:"location"`
-	ReportedAt string 	`json:"reported_at" bson:"reported_at"`
+	ID primitive.ObjectID						 `json:"_id,omitempty" xml:"_id,omitempty" bson:"_id,omitempty"`
+	Amount int											 `json:"amount" xml:"amount" bson:"amount"`
+	Location string									 `json:"location" xml:"location" bson:"location"`
+	ReportedAt primitive.DateTime 	 `json:"reportedAt xml:"reportedAt" bson:"reportedAt"`
 }

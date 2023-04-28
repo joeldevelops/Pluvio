@@ -11,12 +11,14 @@ import (
 )
 
 func main() {
+	// Load .env file
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 		log.Fatal(err)
 	}
 
+	// Create new Fiber instance
 	app := fiber.New()
 
 	log.Println("Connecting to MongoDB")
@@ -27,11 +29,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Create new config instance
 	config := api.Config{
 		DbName: os.Getenv("DB_NAME"),
 		DbCollection: os.Getenv("DB_COLLECTION"),
 		Port: os.Getenv("PORT"),
 	}
 
+	// Start server
 	api.StartServer(app, mongo, config)
 }
