@@ -58,11 +58,12 @@
   </menu>
 
   <form id="enter">
-   <field name="measure" type="number">
+   <field name="amount" type="number">
     <prompt>You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.</prompt>
     <filled>
-	<assign name="ml" expr="measure"/>
-	<prompt>You entered <value expr="ml"/> milliliters</prompt>
+      <assign name="ml" expr="amount"/>
+      <prompt>You entered <value expr="ml"/> milliliters</prompt>
+      <submit next="http://localhost:4242/api/v1/rain" method="post" namelist="amount"/>
     </filled>
    </field>
   </form>
