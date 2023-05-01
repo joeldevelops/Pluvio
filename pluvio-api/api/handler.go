@@ -13,34 +13,60 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+func convertToVXML(message string) string {
+	vxmlString := `
+	<?xml version="1.0" ?>
+	<vxml version="2.1">
+		<form>
+			<block>
+				<prompt>%s</prompt>
+			</block>
+		</form>
+	</vxml>
+	`
+	return fmt.Sprintf(vxmlString, message)
+}
+
 // GetDayRain returns the amount of rain reported in the past day
 func (a *API) GetDayRain(c *fiber.Ctx) error {
-	amount, err := a.dbListRainfall(c.Context(), "day")
+	location := c.Query("location", "")
+	amount, err := a.dbListRainfall(c.Context(), "day", location)
 	if err != nil {
 		c.SendString("Error getting day rainfall")
 	}
 
-	return c.XML(fmt.Sprintf("%dmm rain for the past day", amount))
+	message := fmt.Sprintf("Yesterday it rained %d milliliters", amount)
+
+	c.Set("Content-Type", "application/xml")
+	return c.SendString(convertToVXML(message))
 }
 
 // GetWeekRain returns the amount of rain reported in the past week
 func (a *API) GetWeekRain(c *fiber.Ctx) error {
-	amount, err := a.dbListRainfall(c.Context(), "week")
+	location := c.Query("location", "")
+	amount, err := a.dbListRainfall(c.Context(), "week", location)
 	if err != nil {
 		c.XML("Error getting day rainfall")
 	}
 
-	return c.XML(fmt.Sprintf("%dmm rain for the past week", amount))
+	message := fmt.Sprintf("In the past week it rained %d milliliters", amount)
+
+	c.Set("Content-Type", "application/xml")
+	return c.SendString(convertToVXML(message))
 }
 
 // GetMonthRain returns the amount of rain reported in the past month
 func (a *API) GetMonthRain(c *fiber.Ctx) error {
-	amount, err := a.dbListRainfall(c.Context(), "month")
+	location := c.Query("location", "")
+	amount, err := a.dbListRainfall(c.Context(), "month", location)
 	if err != nil {
 		c.XML("Error getting day rainfall")
 	}
 
-	return c.XML(fmt.Sprintf("%dmm rain for the past month", amount))
+	message := fmt.Sprintf("In the past month it rained %d milliliters", amount)
+
+	c.Set("Content-Type", "application/xml")
+	return c.SendString(convertToVXML(message))
 }
 
 // ReportRain allows a user to report rainfall in mm
@@ -66,7 +92,7 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 	return c.SendString(oid.Hex())
 }
 
-func (a *API) dbListRainfall(ctx context.Context, timeRange string) (int, error) {
+func (a *API) dbListRainfall(ctx context.Context, timeRange string, loc string) (int, error) {
 	// Set the filter based on the time range
 	var tFilter time.Time
 	switch timeRange {
@@ -84,6 +110,11 @@ func (a *API) dbListRainfall(ctx context.Context, timeRange string) (int, error)
 	// Could be day, week, month
 	filter := bson.M{
 		"reportedAt": bson.M{"$gte": primitive.NewDateTimeFromTime(tFilter)},
+		"location": bson.M{"$regex": primitive.Regex{Pattern: loc, Options: "i"}},
+	}
+
+	if loc == "" {
+		delete(filter, "location")
 	}
 
 	results, err := a.dbFind(ctx, filter)

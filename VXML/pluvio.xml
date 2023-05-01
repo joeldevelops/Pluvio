@@ -46,14 +46,25 @@
     </block>
   </form>
 
-  <menu id="secondmenu">
+  <menu id="secondmenumali">
     <prompt>
       To enter rainfall measurements, press 1.
       To receive rainfall information, press 2.
     </prompt>
     <choice dtmf="1" next="#enter">
        Enter measurements</choice>
-    <choice dtmf="2" next="#receive">
+    <choice dtmf="2" next="#receivemali">
+       Receive information</choice>
+  </menu>
+
+  <menu id="secondmenufaso">
+    <prompt>
+      To enter rainfall measurements, press 1.
+      To receive rainfall information, press 2.
+    </prompt>
+    <choice dtmf="1" next="#enter">
+       Enter measurements</choice>
+    <choice dtmf="2" next="#receivefaso">
        Receive information</choice>
   </menu>
 
@@ -63,40 +74,51 @@
     <filled>
       <assign name="ml" expr="amount"/>
       <prompt>You entered <value expr="ml"/> milliliters</prompt>
-      <submit next="http://localhost:4242/api/v1/rain" method="post" namelist="amount"/>
+      <submit next="https://many-turtles-hear-62-195-77-122.loca.lt
+/api/v1/rain" method="post" namelist="amount"/>
     </filled>
    </field>
   </form>
 
-  <form id="receive">
+  <form id="receivemali">
     <block>
       <prompt>You clicked 2: Receive Information</prompt>
-      <goto next="#thirdmenu"/>
+      <goto next="#thirdmenumali"/>
     </block>
   </form>
 
-  <menu id="thirdmenu">
+  <form id="receivefaso">
+    <block>
+      <prompt>You clicked 2: Receive Information</prompt>
+      <goto next="#thirdmenufaso"/>
+    </block>
+  </form>
+
+  <menu id="thirdmenumali">
     <prompt>
       To hear yesterday's measurements, press 1.
       To hear last week's total measurements, press 2.
     </prompt>
-    <choice dtmf="1" next="#yesterday">
+    <choice dtmf="1" next="https://many-turtles-hear-62-195-77-122.loca.lt
+/api/v1/rain/day?location=Mali">
        Yesterday</choice>
-    <choice dtmf="2" next="#lastweek">
+    <choice dtmf="2" next="https://many-turtles-hear-62-195-77-122.loca.lt
+/api/v1/rain/week?location=Mali">
        Last Week</choice>
   </menu>
 
-  <form id="yesterday">
-    <block>
-      <prompt>Yesterday it rained 8 milliliters</prompt>
-    </block>
-  </form>
-
-  <form id="lastweek">
-    <block>
-      <prompt>In the past week it rained 20 milliliters</prompt>
-    </block>
-  </form>
+  <menu id="thirdmenufaso">
+    <prompt>
+      To hear yesterday's measurements, press 1.
+      To hear last week's total measurements, press 2.
+    </prompt>
+    <choice dtmf="1" next="https://many-turtles-hear-62-195-77-122.loca.lt
+/api/v1/rain/day?location=Faso">
+       Yesterday</choice>
+    <choice dtmf="2" next="https://many-turtles-hear-62-195-77-122.loca.lt
+/api/v1/rain/week?location=Faso">
+       Last Week</choice>
+  </menu>
 
   <menu id="mainmenufr">
     <prompt>
