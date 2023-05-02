@@ -79,17 +79,18 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 	// Set the reportedAt field to the current time
 	data.ReportedAt = primitive.NewDateTimeFromTime(time.Now())
 
-	log.Printf("Received rainfall report: %+v\n", data)
-
 	// INSERT
 	oid, err := a.dbWriteRainfall(c.Context(), *data)
 	if err != nil {
 		return err
 	}
+	
+	data.ID = oid
+	log.Printf("Received rainfall report: %+v\n", data)
 
 	// Return the ID of the inserted document
 	// TODO: This should return success or a thank you message
-	return c.SendString(oid.Hex())
+	return c.SendString(convertToVXML("Thank you for your report!"))
 }
 
 func (a *API) dbListRainfall(ctx context.Context, timeRange string, loc string) (int, error) {
