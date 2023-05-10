@@ -4,8 +4,8 @@ import (
 	"os"
 	"log"
 
-	"github.com/joeldevelops/Pluvio/pluvio-api/api"
-	"github.com/joeldevelops/Pluvio/pluvio-api/mdb"
+	"github.com/joeldevelops/Pluvio/api"
+	"github.com/joeldevelops/Pluvio/mdb"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )

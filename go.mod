@@ -1,4 +1,4 @@
-module github.com/joeldevelops/Pluvio/pluvio-api
+module github.com/joeldevelops/Pluvio
 
 go 1.18
 
