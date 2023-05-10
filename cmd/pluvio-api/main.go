@@ -4,8 +4,8 @@ import (
 	"os"
 	"log"
 
-	"github.com/joeldevelops/Pluvio/pluvio-api/api"
-	"github.com/joeldevelops/Pluvio/pluvio-api/mdb"
+	"github.com/joeldevelops/Pluvio/api"
+	"github.com/joeldevelops/Pluvio/mdb"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
@@ -13,9 +13,8 @@ import (
 func main() {
 	// Load .env file
 	err := godotenv.Load(".env")
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		log.Fatal("Error loading .env file")
-		log.Fatal(err)
 	}
 
 	// Create new Fiber instance

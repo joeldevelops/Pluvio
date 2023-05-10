@@ -2,15 +2,15 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
-	"fmt"
 
-	"github.com/joeldevelops/Pluvio/pluvio-api/mdb"
+	"github.com/joeldevelops/Pluvio/mdb"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func convertToVXML(message string) string {
@@ -84,7 +84,7 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	
+
 	data.ID = oid
 	log.Printf("Received rainfall report: %+v\n", data)
 
@@ -111,7 +111,7 @@ func (a *API) dbListRainfall(ctx context.Context, timeRange string, loc string) 
 	// Could be day, week, month
 	filter := bson.M{
 		"reportedAt": bson.M{"$gte": primitive.NewDateTimeFromTime(tFilter)},
-		"location": bson.M{"$regex": primitive.Regex{Pattern: loc, Options: "i"}},
+		"location":   bson.M{"$regex": primitive.Regex{Pattern: loc, Options: "i"}},
 	}
 
 	if loc == "" {
@@ -169,7 +169,7 @@ func (a *API) dbWriteRainfall(ctx context.Context, data mdb.Rainfall) (primitive
 	collection := a.mongo.Database(a.config.DbName).Collection(a.config.DbCollection)
 
 	insertResult, err := collection.InsertOne(ctx, data)
-	
+
 	if err != nil {
 		log.Fatal(err)
 		return primitive.NilObjectID, err
