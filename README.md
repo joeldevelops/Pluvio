@@ -23,7 +23,7 @@
 		- [3.1 POST /api/v1/user](#31-post-apiv1user)
 			- [Request](#request-2)
 			- [200 Response](#200-response-1)
-			- [400 Response](#400-response-1)
+			- [409 Response](#409-response)
 			- [500 Response](#500-response)
 
 
@@ -209,7 +209,7 @@ curl -d '{"name": "Joel", "phone": "+31612345678"}' -H "Content-Type: applicatio
 Created user with ID: 645bb964c8dfb30099937009
 ```
 
-#### 400 Response
+#### 409 Response
 
 ```
 User already exists
