@@ -74,7 +74,7 @@
     <filled>
       <assign name="ml" expr="amount"/>
       <prompt>You entered <value expr="ml"/> milliliters</prompt>
-      <submit next="https://free-trams-remain-62-195-77-122.loca.lt
+      <submit next="https://pluvio-api.herokuapp.com
 /api/v1/rain" method="post" namelist="amount"/>
     </filled>
    </field>
@@ -99,10 +99,10 @@
       To hear yesterday's measurements, press 1.
       To hear last week's total measurements, press 2.
     </prompt>
-    <choice dtmf="1" next="https://free-trams-remain-62-195-77-122.loca.lt
+    <choice dtmf="1" next="https://pluvio-api.herokuapp.com
 /api/v1/rain/day?location=Mali">
        Yesterday</choice>
-    <choice dtmf="2" next="https://free-trams-remain-62-195-77-122.loca.lt
+    <choice dtmf="2" next="https://pluvio-api.herokuapp.com
 /api/v1/rain/week?location=Mali">
        Last Week</choice>
   </menu>
@@ -112,10 +112,10 @@
       To hear yesterday's measurements, press 1.
       To hear last week's total measurements, press 2.
     </prompt>
-    <choice dtmf="1" next="https://free-trams-remain-62-195-77-122.loca.lt
+    <choice dtmf="1" next="https://pluvio-api.herokuapp.com
 /api/v1/rain/day?location=Faso">
        Yesterday</choice>
-    <choice dtmf="2" next="https://free-trams-remain-62-195-77-122.loca.lt
+    <choice dtmf="2" next="https://pluvio-api.herokuapp.com
 /api/v1/rain/week?location=Faso">
        Last Week</choice>
   </menu>
