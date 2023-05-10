@@ -91,7 +91,14 @@ curl -d '{"location": "Mali", "amount": 10}' -H "Content-Type: application/json"
 #### Response
 
 ```
-"5f9b1b7b9d9b7b0001b9d9b7"
+<?xml version="1.0" ?>
+<vxml version="2.1">
+	<form>
+		<block>
+			<prompt>Thank you for your report!</prompt>
+		</block>
+	</form>
+</vxml>
 ```
 
 ### 2.2 GET /api/v1/rain/:timeRange
@@ -109,11 +116,11 @@ Where:
 
 ```
 <?xml version="1.0" ?>
-	<vxml version="2.1">
-		<form>
-			<block>
-				<prompt>In the past [day|week|month] it rained 100 milliliters</prompt>
-			</block>
-		</form>
-	</vxml>
+<vxml version="2.1">
+	<form>
+		<block>
+			<prompt>In the past [day|week|month] it rained 100 milliliters</prompt>
+		</block>
+	</form>
+</vxml>
 ```
