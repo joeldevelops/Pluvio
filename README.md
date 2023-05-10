@@ -4,24 +4,24 @@
 
 ```
 .
+├── Makefile
+├── Procfile
 ├── README.md
-├── VXML
+├── VXML - Contains the VXML files which are copied into voxeo
 │   ├── PourleMali.wav
 │   ├── pluvio.xml
 │   └── pluvio_prototype.xml
-└── pluvio-api
-    ├── Makefile
-    ├── README.md
-    ├── api
-    │   ├── api.go
-    │   └── handler.go
-    ├── cmd
-    │   └── pluvio-api
-    │       └── main.go
-    ├── go.mod
-    └── mdb
-        ├── models.go
-        └── mongodb.go
+├── api - Go files
+│   ├── api.go
+│   └── handler.go
+├── cmd - Contains the main.go files for the binaries
+│   └── pluvio-api
+│       └── main.go
+├── go.mod
+├── go.sum
+└── mdb - Contains the MongoDB files for the application
+    ├── models.go
+    └── mongodb.go
 ```
 
 ## Pluvio API
