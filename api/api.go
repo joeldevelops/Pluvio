@@ -13,6 +13,7 @@ import (
 type Config struct {
 	DbName string
 	DbCollection string
+	UserCollection string
 	Port string
 }
 
@@ -56,6 +57,8 @@ func (a *API) setupRoutes() {
 	// handler.go
 	v1.Get("/rain/:timeRange", a.GetRainfall)
 	v1.Post("/rain", a.ReportRain)
+
+	v1.Post("/user", a.CreateUser)
 }
 
 // Create an API instance, setup routes, and start server

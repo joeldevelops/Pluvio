@@ -78,7 +78,7 @@ We use golangci-lint
 golangci-lint run
 ```
 
-## 2. API
+## 2. Rain API
 
 ### 2.1 POST /api/v1/rain
 
@@ -88,14 +88,53 @@ golangci-lint run
 curl -d '{"location": "Mali", "amount": 10}' -H "Content-Type: application/json" -X POST http://localhost:4242/api/v1/rain
 ```
 
-#### Response
+#### 200 Response
 
-```
+```xml
 <?xml version="1.0" ?>
 <vxml version="2.1">
 	<form>
 		<block>
 			<prompt>Thank you for your report!</prompt>
+		</block>
+	</form>
+</vxml>
+```
+
+#### 400 Response
+
+```xml
+<?xml version="1.0" ?>
+<vxml version="2.1">
+	<form>
+		<block>
+			<prompt>No phone number provided, please call back and try again.</prompt>
+		</block>
+	</form>
+</vxml>
+```
+
+#### 403 Response
+
+```xml
+<?xml version="1.0" ?>
+<vxml version="2.1">
+	<form>
+		<block>
+			<prompt>You are not authorized to use this service.</prompt>
+		</block>
+	</form>
+</vxml>
+```
+
+#### 429 Response
+
+```xml
+<?xml version="1.0" ?>
+<vxml version="2.1">
+	<form>
+		<block>
+			<prompt>Sorry, you have reached the maximum number of reports for today.</prompt>
 		</block>
 	</form>
 </vxml>
@@ -114,7 +153,7 @@ Where:
 
 #### Response
 
-```
+```xml
 <?xml version="1.0" ?>
 <vxml version="2.1">
 	<form>
@@ -123,4 +162,34 @@ Where:
 		</block>
 	</form>
 </vxml>
+```
+
+
+## 3. User API
+
+### 3.1 POST /api/v1/user
+
+#### Request
+
+```
+curl -d '{"name": "Joel", "phone": "+31612345678"}' -H "Content-Type: application/json" -X POST http://localhost:4242/api/v1/user
+```
+
+
+#### 200 Response
+
+```
+Created user with ID: 645bb964c8dfb30099937009
+```
+
+#### 400 Response
+
+```
+User already exists
+```
+
+#### 500 Response
+
+```
+Internal server error
 ```
