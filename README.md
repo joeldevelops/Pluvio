@@ -94,44 +94,26 @@ curl -d '{"location": "Mali", "amount": 10}' -H "Content-Type: application/json"
 "5f9b1b7b9d9b7b0001b9d9b7"
 ```
 
-### 2.2 GET /api/v1/rain/day
+### 2.2 GET /api/v1/rain/:timeRange
 
 #### Request
 
 ```
-curl -X GET http://localhost:4242/api/v1/rain/day
+curl -X GET http://localhost:4242/api/v1/rain/:timeRange?location=<location>
 ```
+Where:
+- `:timeRange` is one of `day`, `week`, `month`
+- (Optional) `location` is one of `Mali`, `(Burkina) Faso`. Leaving this out will return data from all locations.
 
 #### Response
 
 ```
-"100mm rain for the past day"
-```
-
-### 2.3 GET /api/v1/rain/week
-
-#### Request
-
-```
-curl -X GET http://localhost:4242/api/v1/rain/week
-```
-
-#### Response
-
-```
-"100mm rain for the past week"
-```
-
-### 2.4 GET /api/v1/rain/month
-
-#### Request
-
-```
-curl -X GET http://localhost:4242/api/v1/rain/month
-```
-
-#### Response
-
-```
-"100mm rain for the past month"
+<?xml version="1.0" ?>
+	<vxml version="2.1">
+		<form>
+			<block>
+				<prompt>In the past [day|week|month] it rained 100 milliliters</prompt>
+			</block>
+		</form>
+	</vxml>
 ```

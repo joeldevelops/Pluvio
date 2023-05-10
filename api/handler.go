@@ -27,43 +27,16 @@ func convertToVXML(message string) string {
 	return fmt.Sprintf(vxmlString, message)
 }
 
-// GetDayRain returns the amount of rain reported in the past day
-func (a *API) GetDayRain(c *fiber.Ctx) error {
+// GetRainfall returns the amount of rain reported in either the past day, week, or month
+func (a *API) GetRainfall(c *fiber.Ctx) error {
+	timeRange := c.Params("timeRange", "day")
 	location := c.Query("location", "")
-	amount, err := a.dbListRainfall(c.Context(), "day", location)
-	if err != nil {
-		c.SendString("Error getting day rainfall")
-	}
-
-	message := fmt.Sprintf("Yesterday it rained %d milliliters", amount)
-
-	c.Set("Content-Type", "application/xml")
-	return c.SendString(convertToVXML(message))
-}
-
-// GetWeekRain returns the amount of rain reported in the past week
-func (a *API) GetWeekRain(c *fiber.Ctx) error {
-	location := c.Query("location", "")
-	amount, err := a.dbListRainfall(c.Context(), "week", location)
+	amount, err := a.dbListRainfall(c.Context(), timeRange, location)
 	if err != nil {
 		c.XML("Error getting day rainfall")
 	}
 
-	message := fmt.Sprintf("In the past week it rained %d milliliters", amount)
-
-	c.Set("Content-Type", "application/xml")
-	return c.SendString(convertToVXML(message))
-}
-
-// GetMonthRain returns the amount of rain reported in the past month
-func (a *API) GetMonthRain(c *fiber.Ctx) error {
-	location := c.Query("location", "")
-	amount, err := a.dbListRainfall(c.Context(), "month", location)
-	if err != nil {
-		c.XML("Error getting day rainfall")
-	}
-
-	message := fmt.Sprintf("In the past month it rained %d milliliters", amount)
+	message := fmt.Sprintf("In the past %s it rained %d milliliters", timeRange, amount)
 
 	c.Set("Content-Type", "application/xml")
 	return c.SendString(convertToVXML(message))

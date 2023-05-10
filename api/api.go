@@ -24,7 +24,7 @@ type API struct {
 
 // "/" endpoint
 func (a *API) Index(c *fiber.Ctx) error {
-	return c.SendString("Hello, World!")
+	return c.SendString("You! Shall not! Pass!")
 }
 
 // "/health" endpoint
@@ -52,9 +52,7 @@ func (a *API) setupRoutes() {
 	a.app.Get("/health", a.HealthCheck)
 
 	// handler.go
-	a.app.Get("api/v1/rain/day", a.GetDayRain)
-	a.app.Get("api/v1/rain/week", a.GetWeekRain)
-	a.app.Get("api/v1/rain/month", a.GetMonthRain)
+	a.app.Get("api/v1/rain/:timeRange", a.GetRainfall)
 	a.app.Post("api/v1/rain", a.ReportRain)
 }
 
