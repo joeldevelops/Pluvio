@@ -51,9 +51,11 @@ func (a *API) setupRoutes() {
 	a.app.Get("/", a.Index)
 	a.app.Get("/health", a.HealthCheck)
 
+	api := a.app.Group("/api")
+	v1 := api.Group("/v1")
 	// handler.go
-	a.app.Get("api/v1/rain/:timeRange", a.GetRainfall)
-	a.app.Post("api/v1/rain", a.ReportRain)
+	v1.Get("/rain/:timeRange", a.GetRainfall)
+	v1.Post("/rain", a.ReportRain)
 }
 
 // Create an API instance, setup routes, and start server

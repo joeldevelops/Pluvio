@@ -106,7 +106,7 @@ curl -d '{"location": "Mali", "amount": 10}' -H "Content-Type: application/json"
 #### Request
 
 ```
-curl -X GET http://localhost:4242/api/v1/rain/:timeRange?location=<location>
+curl -X GET "http://localhost:4242/api/v1/rain/:timeRange?location=<location>"
 ```
 Where:
 - `:timeRange` is one of `day`, `week`, `month`
