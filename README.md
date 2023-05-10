@@ -1,5 +1,32 @@
 # Pluvio - Rain Data Reporting for the Global South
 
+- [Pluvio - Rain Data Reporting for the Global South](#pluvio---rain-data-reporting-for-the-global-south)
+	- [Folder Structure](#folder-structure)
+	- [Pluvio API](#pluvio-api)
+	- [1. Setup](#1-setup)
+		- [Dependencies](#dependencies)
+		- [1.1 For Docker Setup (NOT IMPLEMENTED YET):](#11-for-docker-setup-not-implemented-yet)
+		- [1.2 For local setup:](#12-for-local-setup)
+		- [1.3 Testing:](#13-testing)
+		- [1.4 Linting:](#14-linting)
+	- [2. Rain API](#2-rain-api)
+		- [2.1 POST /api/v1/rain](#21-post-apiv1rain)
+			- [Request](#request)
+			- [200 Response](#200-response)
+			- [400 Response](#400-response)
+			- [403 Response](#403-response)
+			- [429 Response](#429-response)
+		- [2.2 GET /api/v1/rain/:timeRange](#22-get-apiv1raintimerange)
+			- [Request](#request-1)
+			- [Response](#response)
+	- [3. User API](#3-user-api)
+		- [3.1 POST /api/v1/user](#31-post-apiv1user)
+			- [Request](#request-2)
+			- [200 Response](#200-response-1)
+			- [400 Response](#400-response-1)
+			- [500 Response](#500-response)
+
+
 ## Folder Structure
 
 ```
