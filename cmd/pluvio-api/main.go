@@ -13,9 +13,8 @@ import (
 func main() {
 	// Load .env file
 	err := godotenv.Load(".env")
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		log.Fatal("Error loading .env file")
-		log.Fatal(err)
 	}
 
 	// Create new Fiber instance
