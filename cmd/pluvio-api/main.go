@@ -10,6 +10,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
+func getBoolEnv(key string) bool {
+	return os.Getenv(key) == "true"
+}
+
 func main() {
 	// Load .env file
 	err := godotenv.Load(".env")
@@ -32,6 +36,7 @@ func main() {
 		DbCollection: os.Getenv("DB_COLLECTION"),
 		UserCollection: os.Getenv("USERS_COLLECTION"),
 		Port: os.Getenv("PORT"),
+		UsePhoneAuth: getBoolEnv("USE_PHONE_AUTH"),
 	}
 
 	// Create unique index for User collection concurrently. Idempoent.

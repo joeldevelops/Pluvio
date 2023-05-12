@@ -15,6 +15,7 @@ type Config struct {
 	DbCollection string
 	UserCollection string
 	Port string
+	UsePhoneAuth bool
 }
 
 type API struct {

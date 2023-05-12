@@ -73,26 +73,28 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 		return err
 	}
 
-	// Check if there is a phone number, if not return an error
-	if data.PhoneNumber == "" {
-		log.Println("no phone number provided")
-		c.Status(400)
-		return c.SendString(convertToVXML("No phone number provided, please call back and try again."))
-	}
+	if a.config.UsePhoneAuth {
+		// Check if there is a phone number, if not return an error
+		if data.PhoneNumber == "" {
+			log.Println("no phone number provided")
+			c.Status(400)
+			return c.SendString(convertToVXML("No phone number provided, please call back and try again."))
+		}
 
-	// Check if the user exists in the DB
-	if !a.dbCheckUserExists(c.Context(), data.PhoneNumber) {
-		log.Println("Attempted use by unauthorized user")
-		c.Status(403)
-		return c.SendString(convertToVXML("You are not authorized to use this service."))
+		// Check if the user exists in the DB
+		if !a.dbCheckUserExists(c.Context(), data.PhoneNumber) {
+			log.Println("Attempted use by unauthorized user")
+			c.Status(403)
+			return c.SendString(convertToVXML("You are not authorized to use this service."))
+		}
+		
+		// Check if the user has already reported today
+		if a.dbCheckUserReportedToday(c.Context(), data.PhoneNumber) {
+			c.Status(429)
+			return c.SendString(convertToVXML("Sorry, You have reached the maximum number of reports for today."))
+		}
 	}
-
-	// Check if the user has already reported today
-	if a.dbCheckUserReportedToday(c.Context(), data.PhoneNumber) {
-		c.Status(429)
-		return c.SendString(convertToVXML("Sorry, You have reached the maximum number of reports for today."))
-	}
-
+		
 	// Set the reportedAt field to the current time
 	data.ReportedAt = primitive.NewDateTimeFromTime(time.Now())
 

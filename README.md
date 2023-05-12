@@ -112,7 +112,7 @@ golangci-lint run
 #### Request
 
 ```
-curl -d '{"location": "Mali", "amount": 10}' -H "Content-Type: application/json" -X POST http://localhost:4242/api/v1/rain
+curl -d '{"location": "Mali", "amount": 10, "phoneNumber":"+31612345678"}' -H "Content-Type: application/json" -X POST http://localhost:4242/api/v1/rain
 ```
 
 #### 200 Response
@@ -129,6 +129,7 @@ curl -d '{"location": "Mali", "amount": 10}' -H "Content-Type: application/json"
 ```
 
 #### 400 Response
+Response if no `phoneNumber` is provided and `USE_PHONE_AUTH` is set to `true` in the `.env` file.
 
 ```xml
 <?xml version="1.0" ?>
@@ -142,6 +143,7 @@ curl -d '{"location": "Mali", "amount": 10}' -H "Content-Type: application/json"
 ```
 
 #### 403 Response
+Response if  `USE_PHONE_AUTH` is set to `true` in the `.env` file and the user is not in the DB.
 
 ```xml
 <?xml version="1.0" ?>
@@ -155,6 +157,7 @@ curl -d '{"location": "Mali", "amount": 10}' -H "Content-Type: application/json"
 ```
 
 #### 429 Response
+Reponse if `USE_PHONE_AUTH` is set to `true` in the `.env` file and you have already made a report for the last 24 hours.
 
 ```xml
 <?xml version="1.0" ?>
