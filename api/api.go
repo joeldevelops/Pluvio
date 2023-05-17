@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joeldevelops/Pluvio/mdb"
 )
 
@@ -47,6 +48,8 @@ func (a *API) HealthCheck(c *fiber.Ctx) error {
 
 // route initialization, additional routes in handler.go
 func (a *API) setupRoutes() {
+	a.app.Use(cors.New())
+
 	a.app.Get("/", a.Index)
 	a.app.Get("/health", a.HealthCheck)
 
