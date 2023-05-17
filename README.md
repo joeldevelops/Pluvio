@@ -107,6 +107,12 @@ golangci-lint run
 
 ## 2. Rain API
 
+When making requests to the API, keep in mind that it can return either XML or JSON depending on the `Accept` header.
+```
+curl -H "Accept: application/json" -X GET http://localhost:4242/api/v1/rain/day?location=Mali
+curl -H "Accept: application/xml" -X GET http://localhost:4242/api/v1/rain/day?location=Mali
+```
+
 ### 2.1 POST /api/v1/rain
 
 #### Request
