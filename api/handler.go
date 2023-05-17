@@ -36,7 +36,7 @@ func (a *API) CreateUser(c *fiber.Ctx) error {
 	}
 
 	log.Println("Creating user")
-	oid, err := a.dbWriteUser(c.Context(), *data)
+	oid, err := a.mongo.CreateUser(c.Context(), *data)
 	if err != nil {
 		if mongo.IsDuplicateKeyError(err) {
 			c.Status(409)
@@ -52,15 +52,15 @@ func (a *API) CreateUser(c *fiber.Ctx) error {
 }
 
 // GetRainfall returns the amount of rain reported in either the past day, week, or month
-func (a *API) GetRainfall(c *fiber.Ctx) error {
+func (a *API) GetRainfallAmount(c *fiber.Ctx) error {
 	timeRange := c.Params("timeRange", "day")
 	location := c.Query("location", "")
-	amount, err := a.dbListRainfall(c.Context(), timeRange, location)
+	amount, err := a.calculateRainfall(c.Context(), timeRange, location)
 	if err != nil {
-		c.XML("Error getting day rainfall")
+		c.SendString(convertToVXML(fmt.Sprintf("Error getting %sly rainfall.", timeRange)))
 	}
 
-	message := fmt.Sprintf("In the past %s it rained %d milliliters", timeRange, amount)
+	message := fmt.Sprintf("In the past %s it rained %d milliliters.", timeRange, amount)
 
 	c.Set("Content-Type", "application/xml")
 	return c.SendString(convertToVXML(message))
@@ -82,14 +82,14 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 		}
 
 		// Check if the user exists in the DB
-		if !a.dbCheckUserExists(c.Context(), data.PhoneNumber) {
+		if !a.mongo.CheckUserExists(c.Context(), data.PhoneNumber) {
 			log.Println("Attempted use by unauthorized user")
 			c.Status(403)
 			return c.SendString(convertToVXML("You are not authorized to use this service."))
 		}
 		
 		// Check if the user has already reported today
-		if a.dbCheckUserReportedToday(c.Context(), data.PhoneNumber) {
+		if a.mongo.CheckUserReportedToday(c.Context(), data.PhoneNumber) {
 			c.Status(429)
 			return c.SendString(convertToVXML("Sorry, You have reached the maximum number of reports for today."))
 		}
@@ -99,7 +99,7 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 	data.ReportedAt = primitive.NewDateTimeFromTime(time.Now())
 
 	// INSERT
-	oid, err := a.dbWriteRainfall(c.Context(), *data)
+	oid, err := a.mongo.CreateRainfall(c.Context(), *data)
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,8 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 	return c.SendString(convertToVXML("Thank you for your report!"))
 }
 
-func (a *API) dbListRainfall(ctx context.Context, timeRange string, loc string) (int, error) {
+// Calculates the amount of rain based on the time range and location
+func (a *API) calculateRainfall(ctx context.Context, timeRange string, loc string) (int, error) {
 	// Set the filter based on the time range
 	var tFilter time.Time
 	switch timeRange {
@@ -138,7 +139,7 @@ func (a *API) dbListRainfall(ctx context.Context, timeRange string, loc string) 
 		delete(filter, "location")
 	}
 
-	results, err := a.dbFind(ctx, filter)
+	results, err := a.mongo.GetRainfall(ctx, filter)
 	if err != nil {
 		return 0, err
 	}
@@ -150,116 +151,4 @@ func (a *API) dbListRainfall(ctx context.Context, timeRange string, loc string) 
 	}
 
 	return rain, nil
-}
-
-// Generic function to find documents in the database
-// TODO: This should be moved to the mdb package
-// TODO: Make more generic
-func (a *API) dbFind(ctx context.Context, filter bson.M) ([]*mdb.Rainfall, error) {
-	collection := a.mongo.Database(a.config.DbName).Collection(a.config.DbCollection)
-
-	cursor, err := collection.Find(ctx, filter)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	// TODO: allow for other types of data
-	var results []*mdb.Rainfall
-
-	// Iterate over the cursor and append the results to the results slice
-	for cursor.Next(ctx) {
-		var element mdb.Rainfall
-		// Decode the document, which returns a Rainfall struct from the db response
-		if err := cursor.Decode(&element); err != nil {
-			log.Println(err)
-			return nil, err
-		}
-
-		results = append(results, &element)
-	}
-
-	// Close the cursor once finished
-	cursor.Close(ctx)
-
-	return results, nil
-}
-
-// Generic function to write Rainfall documents to the database
-func (a *API) dbWriteRainfall(ctx context.Context, data mdb.Rainfall) (primitive.ObjectID, error) {
-	collection := a.mongo.Database(a.config.DbName).Collection(a.config.DbCollection)
-
-	insertResult, err := collection.InsertOne(ctx, data)
-
-	if err != nil {
-		log.Println(err)
-		return primitive.NilObjectID, err
-	}
-
-	if oid, ok := insertResult.InsertedID.(primitive.ObjectID); ok {
-		return oid, nil
-	} else {
-		log.Println(err)
-		return primitive.NilObjectID, err
-	}
-}
-
-// Generic function to write User documents to the database
-func (a *API) dbWriteUser(ctx context.Context, data mdb.User) (primitive.ObjectID, error) {
-	collection := a.mongo.Database(a.config.DbName).Collection(a.config.UserCollection)
-
-	insertResult, err := collection.InsertOne(ctx, data)
-
-	if err != nil {
-		log.Println(err)
-		return primitive.NilObjectID, err
-	}
-
-	if oid, ok := insertResult.InsertedID.(primitive.ObjectID); ok {
-		return oid, nil
-	} else {
-		log.Println(err)
-		return primitive.NilObjectID, err
-	}
-}
-
-// Db function to check if a user exists by phone number
-func (a *API) dbCheckUserExists(ctx context.Context, phoneNumber string) bool {
-	collection := a.mongo.Database(a.config.DbName).Collection(a.config.UserCollection)
-
-	filter := bson.M{"phoneNumber": phoneNumber}
-
-	var result mdb.User
-	err := collection.FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return false
-		}
-		log.Println(err)
-		return false
-	}
-
-	return true
-}
-
-// Db function to check if a user has reported today
-func (a *API) dbCheckUserReportedToday(ctx context.Context, phoneNumber string) bool {
-	collection := a.mongo.Database(a.config.DbName).Collection(a.config.UserCollection)
-	
-	filter := bson.M{
-		"reportedAt": bson.M{"$gte": primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -1))},
-		"phoneNumber": phoneNumber,
-	}
-
-	var result mdb.Rainfall
-	err := collection.FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return false
-		}
-		log.Println(err)
-		return false
-	}
-
-	return true
 }

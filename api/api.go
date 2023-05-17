@@ -2,25 +2,22 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/joeldevelops/Pluvio/mdb"
 )
 
 type Config struct {
-	DbName string
-	DbCollection string
-	UserCollection string
 	Port string
 	UsePhoneAuth bool
 }
 
 type API struct {
 	app *fiber.App
-	mongo *mongo.Client
+	mongo *mdb.MongoDB
 	config Config
 }
 
@@ -56,14 +53,14 @@ func (a *API) setupRoutes() {
 	api := a.app.Group("/api")
 	v1 := api.Group("/v1")
 	// handler.go
-	v1.Get("/rain/:timeRange", a.GetRainfall)
+	v1.Get("/rain/:timeRange", a.GetRainfallAmount)
 	v1.Post("/rain", a.ReportRain)
 
 	v1.Post("/user", a.CreateUser)
 }
 
 // Create an API instance, setup routes, and start server
-func StartServer(app *fiber.App, mongo *mongo.Client, config Config) {
+func StartServer(app *fiber.App, mongo *mdb.MongoDB, config Config) {
 	a := &API{
 		app: app,
 		mongo: mongo,

@@ -1,12 +1,13 @@
 package main
 
 import (
-	"os"
+	"context"
 	"log"
+	"os"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/joeldevelops/Pluvio/api"
 	"github.com/joeldevelops/Pluvio/mdb"
-	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
 
@@ -24,24 +25,28 @@ func main() {
 	// Create new Fiber instance
 	app := fiber.New()
 
+	// Connect to MongoDB
+	mongoConfig := &mdb.MDBConfig{}
+	mongoConfig.DbName = os.Getenv("DB_NAME")
+	mongoConfig.RainCollection = os.Getenv("DB_COLLECTION")
+	mongoConfig.UsersCollection = os.Getenv("USERS_COLLECTION")
+
 	log.Println("Connecting to MongoDB")
-	mongo, err := mdb.ConnectMongo(os.Getenv("MONGO_URL"))
+	mongo, err := mdb.NewMongoConnection(os.Getenv("MONGO_URL"), mongoConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer mongo.Disconnect(context.TODO())
 
 	// Create new config instance
 	config := api.Config{
-		DbName: os.Getenv("DB_NAME"),
-		DbCollection: os.Getenv("DB_COLLECTION"),
-		UserCollection: os.Getenv("USERS_COLLECTION"),
 		Port: os.Getenv("PORT"),
 		UsePhoneAuth: getBoolEnv("USE_PHONE_AUTH"),
 	}
 
 	// Create unique index for User collection concurrently. Idempoent.
 	go func() {
-		err := mdb.CreateUserIndex(mongo, config.DbName, config.UserCollection)
+		err := mongo.CreateUserIndex()
 		if err != nil {
 			log.Println("Error creating index for User collection")
 			log.Println(err)
