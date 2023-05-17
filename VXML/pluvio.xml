@@ -69,15 +69,14 @@
   </menu>
 
   <form id="entermali">
-   <field name="amount" type="number">
-    <prompt>You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.</prompt>
-    <assign name="ml" expr="amount"/>
-    <prompt>You entered <value expr="ml"/> milliliters</prompt>
-    <filled>
-      <submit next="https://pluvio-api.herokuapp.com
-/api/v1/rain" method="POST" namelist="amount"/>
+    <assign name="location" expr="'Mali'"/>
+    <field name="amount" type="number">
+      <prompt>You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.</prompt>
+    </field>
+    <filled mode="all">
+      <prompt>You entered <value expr="amount"/> milliliters</prompt>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain" method="POST" namelist="amount"/>
     </filled>
-   </field>
   </form>
 
   <form id="receivemali">
@@ -99,13 +98,17 @@
       To hear yesterday's measurements, press 1.
       To hear last week's total measurements, press 2.
     </prompt>
-    <choice dtmf="1" next="https://pluvio-api.herokuapp.com
-/api/v1/rain/day?location=Mali">
+    <choice dtmf="1" next="#yesterdaymali">
        Yesterday</choice>
-    <choice dtmf="2" next="https://pluvio-api.herokuapp.com
-/api/v1/rain/week?location=Mali">
+    <choice dtmf="2" next="https://pluvio-api.herokuapp.com/api/v1/rain/week?location=Mali">
        Last Week</choice>
   </menu>
+
+  <form id="yesterdaymali">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/day?location=Mali" method="GET"/>
+    </block>
+  </form>
 
   <menu id="thirdmenufaso">
     <prompt>

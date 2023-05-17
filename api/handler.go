@@ -190,5 +190,5 @@ func (a *API) calculateRainfall(ctx context.Context, timeRange string, loc strin
 		rain += result.Amount
 	}
 
-	return rain, nil
+	return rain / len(results), nil
 }
