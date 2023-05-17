@@ -6,11 +6,11 @@
       <prompt>
         Welcome to Pluvio, a voice service to enter or receive rainfall information.
       </prompt>
-      <goto next="#lang"/>
+      <goto next="#langchoice"/>
     </block>
   </form>
 
-  <menu id="lang">
+  <menu id="langchoice">
     <prompt>
       For English, press 1.
       For French, press 2.
@@ -256,14 +256,25 @@
     </filled>
   </form>
 
-  <form id="receivefr">
+  <form id="receivemalifr">
     <block>
       <prompt>
         <audio src="./audio_french/click2.wav">
 	        You clicked 2: Receive Information
         </audio>
       </prompt>
-      <goto next="#thirdmenufr"/>
+      <goto next="#thirdmenumalifr"/>
+    </block>
+  </form>
+
+  <form id="receivefasofr">
+    <block>
+      <prompt>
+        <audio src="./audio_french/click2.wav">
+	        You clicked 2: Receive Information
+        </audio>
+      </prompt>
+      <goto next="#thirdmenufasofr"/>
     </block>
   </form>
 
@@ -285,19 +296,25 @@
 
   <form id="yesterdaymalifr">
     <block>
-      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/day?location=Mali" method="GET"/>
+      <var name="location" expr="'Mali'"/>
+      <var name="lang" expr="'french'"/>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/day" method="GET" namelist="location lang"/>
     </block>
   </form>
 
   <form id="weekmalifr">
     <block>
-      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/week?location=Mali" method="GET"/>
+      <var name="location" expr="'Mali'"/>
+      <var name="lang" expr="'french'"/>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/week" method="GET" namelist="location lang"/>
     </block>
   </form>
 
   <form id="monthmalifr">
     <block>
-      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/month?location=Mali" method="GET"/>
+      <var name="location" expr="'Mali'"/>
+      <var name="lang" expr="'french'"/>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/month" method="GET" namelist="location lang"/>
     </block>
   </form>
 
@@ -319,19 +336,25 @@
 
   <form id="yesterdayfasofr">
     <block>
-      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/day?location=Mali" method="GET"/>
+      <var name="location" expr="'Burkina Faso'"/>
+      <var name="lang" expr="'french'"/>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/day" method="GET" namelist="location lang"/>
     </block>
   </form>
 
   <form id="weekfasofr">
     <block>
-      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/week?location=Mali" method="GET"/>
+      <var name="location" expr="'Burkina Faso'"/>
+      <var name="lang" expr="'french'"/>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/week" method="GET" namelist="location lang"/>
     </block>
   </form>
 
   <form id="monthfasofr">
     <block>
-      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/month?location=Mali" method="GET"/>
+      <var name="location" expr="'Burkina Faso'"/>
+      <var name="lang" expr="'french'"/>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/month" method="GET" namelist="location lang"/>
     </block>
   </form>
 
