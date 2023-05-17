@@ -44,6 +44,20 @@ func buildResponse(ctx *fiber.Ctx, message string, rainfall int) string {
 	return convertToVXML(message)
 }
 
+// Send the response as XML or JSON depending on the Accept header
+func sendResponse(ctx *fiber.Ctx, message string) error {
+	if ctx.Accepts("application/xml") != "" {
+		return ctx.XML(message)
+	}
+
+	if ctx.Accepts("application/json", "json") != "" {
+		return ctx.SendString(message)
+	}
+
+	// default to xml
+	return ctx.XML(message)
+}
+
 // CreateUser creates a new user in the database
 func (a *API) CreateUser(c *fiber.Ctx) error {
 	data := new(mdb.User)
@@ -57,17 +71,17 @@ func (a *API) CreateUser(c *fiber.Ctx) error {
 		if mongo.IsDuplicateKeyError(err) {
 			c.Status(409)
 			msg := buildResponse(c, "User already exists", -1)
-			return c.SendString(msg)
+			return sendResponse(c, msg)
 		}
 
 		c.Status(500)
 		msg := buildResponse(c, "Error creating user", -1)
-		return c.SendString(msg)
+		return sendResponse(c, msg)
 	}
 
 	c.Status(201)
 	msg := buildResponse(c, fmt.Sprintf("Created user with ID: %s", oid.Hex()), -1)
-	return c.SendString(msg)
+	return sendResponse(c, msg)
 }
 
 // GetRainfall returns the amount of rain reported in either the past day, week, or month
@@ -77,13 +91,13 @@ func (a *API) GetRainfallAmount(c *fiber.Ctx) error {
 	amount, err := a.calculateRainfall(c.Context(), timeRange, location)
 	if err != nil {
 		msg := buildResponse(c, fmt.Sprintf("Error getting %sly rainfall.", timeRange), -1)
-		c.SendString(msg)
+		sendResponse(c, msg)
 	}
 
 	message := fmt.Sprintf("In the past %s it rained %d milliliters.", timeRange, amount)
 	msg := buildResponse(c, message, amount)
 
-	return c.SendString(msg)
+	return sendResponse(c, msg)
 }
 
 // ReportRain allows a user to report rainfall in mm
@@ -99,7 +113,7 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 			log.Println("no phone number provided")
 			c.Status(400)
 			msg := buildResponse(c, "No phone number provided, please call back and try again.", -1)
-			return c.SendString(msg)
+			return sendResponse(c, msg)
 		}
 
 		// Check if the user exists in the DB
@@ -107,14 +121,14 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 			log.Println("Attempted use by unauthorized user")
 			c.Status(403)
 			msg := buildResponse(c, "You are not authorized to use this service.", -1)
-			return c.SendString(msg)
+			return sendResponse(c, msg)
 		}
 		
 		// Check if the user has already reported today
 		if a.mongo.CheckUserReportedToday(c.Context(), data.PhoneNumber) {
 			c.Status(429)
 			msg := buildResponse(c, "Sorry, You have reached the maximum number of reports for today.", -1)
-			return c.SendString(msg)
+			return sendResponse(c, msg)
 		}
 	}
 		
@@ -134,7 +148,7 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 	// TODO: This should return success or a thank you message
 	c.Status(201)
 	msg := buildResponse(c, "Thank you for your report!", -1)
-	return c.SendString(msg)
+	return sendResponse(c, msg)
 }
 
 // Calculates the amount of rain based on the time range and location
