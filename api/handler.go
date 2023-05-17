@@ -14,23 +14,29 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func convertToVXML(message string) string {
+func convertToVXML(message string, language string) string {
+	if language == "french" {
+		language = "fr-FR"
+	} else {
+		language = "en-US"
+	}
+
 	vxmlString := `
 	<?xml version="1.0" ?>
-	<vxml version="2.1">
+	<vxml version="2.1" xml:lang="%s">
 		<form>
 			<block>
-				<prompt>%s</prompt>
+				<prompt>"%s"</prompt>
 			</block>
 		</form>
 	</vxml>
 	`
-	return fmt.Sprintf(vxmlString, message)
+	return fmt.Sprintf(vxmlString, language, message)
 }
 
-func buildResponse(ctx *fiber.Ctx, message string, rainfall int) string {
+func buildResponse(ctx *fiber.Ctx, message string, rainfall int, lang string) string {
 	if ctx.Accepts("application/xml") != "" {
-		return convertToVXML(message)
+		return convertToVXML(message, lang)
 	}
 
 	if ctx.Accepts("application/json", "json") != "" {
@@ -41,7 +47,7 @@ func buildResponse(ctx *fiber.Ctx, message string, rainfall int) string {
 	}
 
 	// default to xml
-	return convertToVXML(message)
+	return convertToVXML(message, lang)
 }
 
 // Send the response as XML or JSON depending on the Accept header
@@ -60,6 +66,20 @@ func sendResponse(ctx *fiber.Ctx, message string) error {
 	return ctx.SendString(message)
 }
 
+// translateMessage translates the timeRange to french
+func translateMessage(timeRange string) string {
+	switch timeRange {
+	case "day":
+		return "Au cours de la dernière journée"
+	case "week":
+		return "La semaine dernière"
+	case "month":
+		return "Le mois dernier"
+	default:
+		return "jour"
+	}
+}
+
 // CreateUser creates a new user in the database
 func (a *API) CreateUser(c *fiber.Ctx) error {
 	data := new(mdb.User)
@@ -67,22 +87,24 @@ func (a *API) CreateUser(c *fiber.Ctx) error {
 		return err
 	}
 
+	lang := c.Query("lang", "english")
+
 	log.Println("Creating user")
 	oid, err := a.mongo.CreateUser(c.Context(), *data)
 	if err != nil {
 		if mongo.IsDuplicateKeyError(err) {
 			c.Status(409)
-			msg := buildResponse(c, "User already exists", -1)
+			msg := buildResponse(c, "User already exists", -1, lang)
 			return sendResponse(c, msg)
 		}
 
 		c.Status(500)
-		msg := buildResponse(c, "Error creating user", -1)
+		msg := buildResponse(c, "Error creating user", -1, lang)
 		return sendResponse(c, msg)
 	}
 
 	c.Status(201)
-	msg := buildResponse(c, fmt.Sprintf("Created user with ID: %s", oid.Hex()), -1)
+	msg := buildResponse(c, fmt.Sprintf("Created user with ID: %s", oid.Hex()), -1, lang)
 	return sendResponse(c, msg)
 }
 
@@ -90,14 +112,20 @@ func (a *API) CreateUser(c *fiber.Ctx) error {
 func (a *API) GetRainfallAmount(c *fiber.Ctx) error {
 	timeRange := c.Params("timeRange", "day")
 	location := c.Query("location", "")
+	lang := c.Query("lang", "english")
 	amount, err := a.calculateRainfall(c.Context(), timeRange, location)
 	if err != nil {
-		msg := buildResponse(c, fmt.Sprintf("Error getting %sly rainfall.", timeRange), -1)
+		msg := buildResponse(c, fmt.Sprintf("Error getting %sly rainfall.", timeRange), -1, lang)
 		sendResponse(c, msg)
 	}
 
-	message := fmt.Sprintf("In the past %s it rained %d milliliters.", timeRange, amount)
-	msg := buildResponse(c, message, amount)
+	var message string
+	if lang == "french" {
+		message = fmt.Sprintf("%s, il a plu %d millimètres.", translateMessage(timeRange), amount)
+	} else {
+		message = fmt.Sprintf("In the past %s it rained %d millimeters.", timeRange, amount)
+	}
+	msg := buildResponse(c, message, amount, lang)
 
 	return sendResponse(c, msg)
 }
@@ -109,12 +137,14 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 		return err
 	}
 
+	lang := c.Query("lang", "english")
+
 	if a.config.UsePhoneAuth {
 		// Check if there is a phone number, if not return an error
 		if data.PhoneNumber == "" {
 			log.Println("no phone number provided")
 			c.Status(400)
-			msg := buildResponse(c, "No phone number provided, please call back and try again.", -1)
+			msg := buildResponse(c, "No phone number provided, please call back and try again.", -1, lang)
 			return sendResponse(c, msg)
 		}
 
@@ -122,14 +152,14 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 		if !a.mongo.CheckUserExists(c.Context(), data.PhoneNumber) {
 			log.Println("Attempted use by unauthorized user")
 			c.Status(403)
-			msg := buildResponse(c, "You are not authorized to use this service.", -1)
+			msg := buildResponse(c, "You are not authorized to use this service.", -1, lang)
 			return sendResponse(c, msg)
 		}
 		
 		// Check if the user has already reported today
 		if a.mongo.CheckUserReportedToday(c.Context(), data.PhoneNumber) {
 			c.Status(429)
-			msg := buildResponse(c, "Sorry, You have reached the maximum number of reports for today.", -1)
+			msg := buildResponse(c, "Sorry, You have reached the maximum number of reports for today.", -1, lang)
 			return sendResponse(c, msg)
 		}
 	}
@@ -149,7 +179,12 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 	// Return the ID of the inserted document
 	// TODO: This should return success or a thank you message
 	c.Status(201)
-	msg := buildResponse(c, "Thank you for your report!", -1)
+	var msg string
+	if lang == "french" {
+		msg = buildResponse(c, "Merci pour votre rapport!", -1, lang)
+	} else {
+		msg = buildResponse(c, "Thank you for your report!", -1, lang)
+	}
 	return sendResponse(c, msg)
 }
 

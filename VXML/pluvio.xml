@@ -69,13 +69,24 @@
   </menu>
 
   <form id="entermali">
-    <assign name="location" expr="'Mali'"/>
+    <var name="location" expr="'Mali'"/>
     <field name="amount" type="number">
       <prompt>You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.</prompt>
     </field>
     <filled mode="all">
       <prompt>You entered <value expr="amount"/> milliliters</prompt>
-      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain" method="POST" namelist="amount"/>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain" method="POST" namelist="amount location"/>
+    </filled>
+  </form>
+
+  <form id="enterfaso">
+    <var name="location" expr="'Burkina Faso'"/>
+    <field name="amount" type="number">
+      <prompt>You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.</prompt>
+    </field>
+    <filled mode="all">
+      <prompt>You entered <value expr="amount"/> milliliters</prompt>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain" method="POST" namelist="amount location"/>
     </filled>
   </form>
 
@@ -95,13 +106,16 @@
 
   <menu id="thirdmenumali">
     <prompt>
-      To hear yesterday's measurements, press 1.
-      To hear last week's total measurements, press 2.
+      To hear how much it rained in the past day, press 1.
+      To hear how much it rained in the past week, press 2.
+      To hear how much it rained in the past month, press 3.
     </prompt>
     <choice dtmf="1" next="#yesterdaymali">
-       Yesterday</choice>
-    <choice dtmf="2" next="https://pluvio-api.herokuapp.com/api/v1/rain/week?location=Mali">
-       Last Week</choice>
+      Yesterday</choice>
+    <choice dtmf="2" next="#weekmali">
+      Last Week</choice>
+    <choice dtmf="3" next="#monthmali">
+      Last Month</choice>
   </menu>
 
   <form id="yesterdaymali">
@@ -110,113 +124,214 @@
     </block>
   </form>
 
+  <form id="weekmali">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/week?location=Mali" method="GET"/>
+    </block>
+  </form>
+
+  <form id="monthmali">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/month?location=Mali" method="GET"/>
+    </block>
+  </form>
+
   <menu id="thirdmenufaso">
     <prompt>
-      To hear yesterday's measurements, press 1.
-      To hear last week's total measurements, press 2.
+      To hear how much it rained in the past day, press 1.
+      To hear how much it rained in the past week, press 2.
+      To hear how much it rained in the past month, press 3.
     </prompt>
-    <choice dtmf="1" next="https://pluvio-api.herokuapp.com
-/api/v1/rain/day?location=Faso">
-       Yesterday</choice>
-    <choice dtmf="2" next="https://pluvio-api.herokuapp.com
-/api/v1/rain/week?location=Faso">
-       Last Week</choice>
+    <choice dtmf="1" next="#yesterdayfaso">
+      Yesterday</choice>
+    <choice dtmf="2" next="#weekfaso">
+      Last Week</choice>
+    <choice dtmf="3" next="#monthfaso">
+      Last Month</choice>
   </menu>
+
+  <form id="yesterdayfaso">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/day?location=Faso" method="GET"/>
+    </block>
+  </form>
+
+  <form id="weekfaso">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/week?location=Faso" method="GET"/>
+    </block>
+  </form>
+
+  <form id="monthfaso">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/month?location=Faso" method="GET"/>
+    </block>
+  </form>
 
   <menu id="mainmenufr">
     <prompt>
       <audio src="./audio_french/PourleMali.wav">
-	Select 1 for Mali and 2 for Burkina Faso.
+	      Select 1 for Mali and 2 for Burkina Faso.
       </audio>
     </prompt>
-    <choice dtmf="1" next="#Malifr">
+    <choice dtmf="1" next="#malifr">
        Mali</choice>
-    <choice dtmf="2" next="#BFfr">
+    <choice dtmf="2" next="#fasofr">
        Burkina Faso</choice>
   </menu>
 
-   <form id="Malifr">
+   <form id="malifr">
     <block>
       <prompt>
         <audio src="./audio_french/selectionneMali.wav">
-	  You selected Mali.
+	        You selected Mali.
         </audio>
       </prompt>
-      <goto next="#secondmenufr"/>
+      <goto next="#secondmenumalifr"/>
     </block>
   </form>
 
-  <form id="BFfr">
+  <form id="fasofr">
     <block>
       <prompt>
         <audio src="./audio_french/selectionneBurkina.wav">
-	  You selected Burkina Faso.
+	        You selected Burkina Faso.
         </audio>
       </prompt>
-      <goto next="#secondmenufr"/>
+      <goto next="#secondmenufasofr"/>
     </block>
   </form>
 
-  <menu id="secondmenufr">
+  <menu id="secondmenumalifr">
     <prompt>
       <audio src="./audio_french/entermesures.wav">
-	To enter rainfall measurements, press 1.
+	      To enter rainfall measurements, press 1.
       	To receive rainfall information, press 2.
       </audio>
     </prompt>
-    <choice dtmf="1" next="#enterfr">
+    <choice dtmf="1" next="#entermalifr">
        Enter measurements</choice>
-    <choice dtmf="2" next="#receivefr">
+    <choice dtmf="2" next="#receivemalifr">
        Receive information</choice>
   </menu>
 
-  <form id="enterfr">
-   <field name="measure" type="number">
+  <menu id="secondmenufasofr">
     <prompt>
-      <audio src="./audio_french/clickentrer.wav">
-	You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.
+      <audio src="./audio_french/entermesures.wav">
+	      To enter rainfall measurements, press 1.
+      	To receive rainfall information, press 2.
       </audio>
     </prompt>
+    <choice dtmf="1" next="#enterfasofr">
+       Enter measurements</choice>
+    <choice dtmf="2" next="#receivefasofr">
+       Receive information</choice>
+  </menu>
+
+  <form id="entermalifr">
+    <var name="location" expr="'Mali'"/>
+    <field name="amount" type="number">
+      <prompt>
+        <audio src="./audio_french/clickentrer.wav">
+          You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.
+        </audio>
+      </prompt>
+    </field>
     <filled>
-	<assign name="ml" expr="measure"/>
-	<prompt>You entered <value expr="ml"/> milliliters</prompt>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain" method="POST" namelist="amount location"/>
     </filled>
-   </field>
+  </form>
+
+  <form id="enterfasofr">
+    <var name="location" expr="'Burkina Faso'"/>
+    <field name="amount" type="number">
+      <prompt>
+        <audio src="./audio_french/clickentrer.wav">
+          You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.
+        </audio>
+      </prompt>
+    </field>
+    <filled>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain" method="POST" namelist="amount location"/>
+    </filled>
   </form>
 
   <form id="receivefr">
     <block>
       <prompt>
         <audio src="./audio_french/click2.wav">
-	  You clicked 2: Receive Information
+	        You clicked 2: Receive Information
         </audio>
       </prompt>
       <goto next="#thirdmenufr"/>
     </block>
   </form>
 
-  <menu id="thirdmenufr">
+  <menu id="thirdmenumalifr">
     <prompt>
       <audio src="./audio_french/entendremesures.wav">
-	To hear yesterday's measurements, press 1.
+	      To hear yesterday's measurements, press 1.
         To hear last week's total measurements, press 2.
+        To hear last month's total measurements, press 3.
       </audio>
     </prompt>
-    <choice dtmf="1" next="#yesterdayfr">
-       Yesterday</choice>
-    <choice dtmf="2" next="#lastweekfr">
-       Last Week</choice>
+    <choice dtmf="1" next="#yesterdaymalifr">
+      Yesterday</choice>
+    <choice dtmf="2" next="#weekmalifr">
+      Last Week</choice>
+    <choice dtmf="3" next="#monthmalifr">
+      Last Month</choice>
   </menu>
 
-  <form id="yesterdayfr">
+  <form id="yesterdaymalifr">
     <block>
-      <prompt>Yesterday it rained 8 milliliters</prompt>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/day?location=Mali" method="GET"/>
     </block>
   </form>
 
-  <form id="lastweekfr">
+  <form id="weekmalifr">
     <block>
-      <prompt>In the past week it rained 20 milliliters</prompt>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/week?location=Mali" method="GET"/>
+    </block>
+  </form>
+
+  <form id="monthmalifr">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/month?location=Mali" method="GET"/>
+    </block>
+  </form>
+
+  <menu id="thirdmenufasofr">
+    <prompt>
+      <audio src="./audio_french/entendremesures.wav">
+	      To hear yesterday's measurements, press 1.
+        To hear last week's total measurements, press 2.
+        To hear last month's total measurements, press 3.
+      </audio>
+    </prompt>
+    <choice dtmf="1" next="#yesterdayfasofr">
+      Yesterday</choice>
+    <choice dtmf="2" next="#weekfasofr">
+      Last Week</choice>
+    <choice dtmf="3" next="#monthfasofr">
+      Last Month</choice>
+  </menu>
+
+  <form id="yesterdayfasofr">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/day?location=Mali" method="GET"/>
+    </block>
+  </form>
+
+  <form id="weekfasofr">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/week?location=Mali" method="GET"/>
+    </block>
+  </form>
+
+  <form id="monthfasofr">
+    <block>
+      <submit next="https://pluvio-api.herokuapp.com/api/v1/rain/month?location=Mali" method="GET"/>
     </block>
   </form>
 
