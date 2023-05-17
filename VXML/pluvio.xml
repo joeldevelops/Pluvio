@@ -26,23 +26,23 @@
       For Mali, press 1.
       For Burkina Faso, press 2.
     </prompt>
-    <choice dtmf="1" next="#Mali">
+    <choice dtmf="1" next="#mali">
        Mali</choice>
-    <choice dtmf="2" next="#BF">
+    <choice dtmf="2" next="#bf">
        Burkina Faso</choice>
   </menu>
 
-  <form id="Mali">
+  <form id="mali">
     <block>
       <prompt>You selected Mali.</prompt>
-      <goto next="#secondmenu"/>
+      <goto next="#secondmenumali"/>
     </block>
   </form>
 
-  <form id="BF">
+  <form id="bf">
     <block>
       <prompt>You selected Burkina Faso</prompt>
-      <goto next="#secondmenu"/>
+      <goto next="#secondmenufaso"/>
     </block>
   </form>
 
@@ -51,7 +51,7 @@
       To enter rainfall measurements, press 1.
       To receive rainfall information, press 2.
     </prompt>
-    <choice dtmf="1" next="#enter">
+    <choice dtmf="1" next="#entermali">
        Enter measurements</choice>
     <choice dtmf="2" next="#receivemali">
        Receive information</choice>
@@ -62,20 +62,20 @@
       To enter rainfall measurements, press 1.
       To receive rainfall information, press 2.
     </prompt>
-    <choice dtmf="1" next="#enter">
+    <choice dtmf="1" next="#enterfaso">
        Enter measurements</choice>
     <choice dtmf="2" next="#receivefaso">
        Receive information</choice>
   </menu>
 
-  <form id="enter">
+  <form id="entermali">
    <field name="amount" type="number">
     <prompt>You clicked 1: Enter measurements. Please enter your measurements in milliliters and end with a hashtag.</prompt>
+    <assign name="ml" expr="amount"/>
+    <prompt>You entered <value expr="ml"/> milliliters</prompt>
     <filled>
-      <assign name="ml" expr="amount"/>
-      <prompt>You entered <value expr="ml"/> milliliters</prompt>
       <submit next="https://pluvio-api.herokuapp.com
-/api/v1/rain" method="post" namelist="amount"/>
+/api/v1/rain" method="POST" namelist="amount"/>
     </filled>
    </field>
   </form>

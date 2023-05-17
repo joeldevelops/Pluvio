@@ -47,7 +47,8 @@ func buildResponse(ctx *fiber.Ctx, message string, rainfall int) string {
 // Send the response as XML or JSON depending on the Accept header
 func sendResponse(ctx *fiber.Ctx, message string) error {
 	if ctx.Accepts("application/xml") != "" {
-		return ctx.XML(message)
+		ctx.Set("Content-Type", "application/xml")
+		return ctx.SendString(message)
 	}
 
 	if ctx.Accepts("application/json", "json") != "" {
@@ -55,7 +56,8 @@ func sendResponse(ctx *fiber.Ctx, message string) error {
 	}
 
 	// default to xml
-	return ctx.XML(message)
+	ctx.Set("Content-Type", "application/xml")
+	return ctx.SendString(message)
 }
 
 // CreateUser creates a new user in the database
