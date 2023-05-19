@@ -217,6 +217,8 @@ func (a *API) calculateRainfall(ctx context.Context, timeRange string, loc strin
 	results, err := a.mongo.GetRainfall(ctx, filter)
 	if err != nil {
 		return 0, err
+	} else if len(results) == 0 {
+		return 0, nil
 	}
 
 	// Iterate over the results and sum the amount of rain for the day

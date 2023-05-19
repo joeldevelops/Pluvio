@@ -58,7 +58,8 @@ async function loadData(timeRange, location) {
 
     const fetchOptions = {
         headers: {
-            "Accept": "application/json"
+            "Accept": "application/json",
+            "Access-Control-Allow-Origin" : "*",
         }
     };
 
@@ -76,7 +77,8 @@ async function reportData(phoneNumber, location, amount) {
     const fetchOptions = {
         headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json"
+            "Accept": "application/json",
+            "Access-Control-Allow-Origin" : "*",
         },
         method: 'POST',
         body: JSON.stringify({
