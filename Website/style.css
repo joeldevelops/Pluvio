@@ -1,0 +1,208 @@
+body {
+  background-color: white;
+}
+
+h1 {
+  font-family: verdana;
+  color: black;
+  text-align: center;
+}
+
+h2 {
+  color: black;
+  text-align: center;
+}
+
+p {
+  font-family: verdana;
+  font-size: 16px;
+}
+
+#regions {
+  font-family: verdana;
+  font-size: 16px;
+}
+label {
+  font-family: verdana;
+  font-size: 16px;
+}
+input {
+  font-family: verdana;
+  font-size: 16px;
+}
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+img.logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 13%;
+  height: auto;
+}
+img.return {
+  margin-left: auto;
+  margin-right: auto;
+  height: 16px;
+  width: auto;
+  justify-content: center;
+}
+
+ul.nav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #384259;
+}
+
+li {
+  float: left;
+  font-family: verdana;
+  font-size: 16px;
+  color: white;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+  background-color: rgb(121, 188, 69);
+  color: black;
+  font-weight: bolder;
+  font-family: verdana;
+  text-align: center;
+}
+
+/* unvisited link */
+li a:link {
+  color: white;
+}
+
+/* visited link */
+li a:visited {
+  color: white;
+}
+
+/* selected link */
+a:active {
+  color: white;
+}
+
+#mapsection {
+  width: 50%;
+  height: auto;
+  fill: #ccc;
+  stroke: #333;
+  stroke-width: 2px;
+}
+
+path {
+  cursor: pointer;
+  fill: grey
+}
+
+.clicked {
+  fill: #ff0000;
+}
+#Mali {
+  fill: #002868;
+  stroke: white;
+}
+path:hover#Mali {
+  fill: rgb(121, 188, 69);
+  stroke: white;
+  stroke-width: 5px;
+  transition: fill 0.4s;
+}
+
+#Burkina_Faso {
+  fill: #002868;
+  stroke: white;
+}
+path:hover#Burkina_Faso {
+  fill:rgb(121, 188, 69);
+  stroke: white;
+  stroke-width: 4px;
+  transition: fill 0.4s;
+}
+
+div.navbar {
+  bottom: 0;
+  width: 100%;
+  list-style-type: none;
+  overflow: hidden;
+  background-color: #384259;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  padding: 20px 10px;
+  width: 100%;
+  overflow: hidden;
+  background-color: #384259;
+  color: white;
+  font-weight: bold;
+  font-family: verdana;
+  text-align: center;
+  font-size: 18px;
+}
+
+button:hover {
+  background-color: rgb(121, 188, 69);
+  color: white;
+  font-weight: bolder;
+  font-family: verdana;
+  text-align: center;
+}
+
+#button {
+  display: flex; /* 2. display flex to the rescue */
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  margin: auto;
+  display: block;
+}
+
+th {
+  font-family: verdana;
+  font-size: 18px;
+  text-align: center;
+}
+.region {
+  width: 150px;
+}
+
+td {
+  font-family: verdana;
+  font-size: 15px;
+}
+.time {
+  font-weight: bold;
+}
+.data {
+  text-align: center;
+}
+.ml {
+  text-align: left;
+}
