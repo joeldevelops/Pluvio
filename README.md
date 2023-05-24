@@ -1,5 +1,7 @@
 # Pluvio - Rain Data Reporting for the Global South
 
+![Pluvio Logo](Website/logo-transparent.png)
+
 - [Pluvio - Rain Data Reporting for the Global South](#pluvio---rain-data-reporting-for-the-global-south)
 	- [Folder Structure](#folder-structure)
 	- [Pluvio API](#pluvio-api)
