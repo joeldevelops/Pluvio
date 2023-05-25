@@ -2,16 +2,21 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
+	"context"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joeldevelops/Pluvio/mdb"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type TestAPI struct {
@@ -20,7 +25,7 @@ type TestAPI struct {
 
 func (t *TestAPI) setup(usePhoneAuth bool) {
 	// Load .env file
-	err := godotenv.Load(".env")
+	err := godotenv.Load("../.env")
 	if err != nil && !os.IsNotExist(err) {
 		log.Fatal("Error loading .env file")
 	}
@@ -30,7 +35,8 @@ func (t *TestAPI) setup(usePhoneAuth bool) {
 		RainCollection: fmt.Sprintf("%s_test", os.Getenv("DB_COLLECTION")),
 		UsersCollection: fmt.Sprintf("%s_test", os.Getenv("USERS_COLLECTION")),
 	}
-	mongo, _ := mdb.NewMongoConnection(os.Getenv("MONGO_URL"), testMdbConfig)
+	url := os.Getenv("MONGO_URL")
+	db, _ := mdb.NewMongoConnection(url, testMdbConfig)
 
 	// Create new Fiber instance
 	app := fiber.New()
@@ -40,27 +46,64 @@ func (t *TestAPI) setup(usePhoneAuth bool) {
 		Port: os.Getenv("PORT"),
 		UsePhoneAuth: usePhoneAuth,
 	}
+	
+	// Create unique index for test User collection concurrently. Idempoent.
+	indexModel := mongo.IndexModel{
+		Keys: bson.M{
+			"phoneNumber": 1, // index in ascending order
+		},
+		Options: options.Index().SetUnique(true),
+	}
+
+	// Index creation
+	_, _ = db.Database(testMdbConfig.DbName).Collection(testMdbConfig.UsersCollection).Indexes().CreateOne(context.TODO(), indexModel)
 
 	// Create new API instance
-	t.API = NewAPI(app, mongo, config)
+	t.API = NewAPI(app, db, config)
+}
+
+func (t *TestAPI) teardown() {
+	// Drop test database
+	testDbName := fmt.Sprintf("%s_test", os.Getenv("DB_NAME"))
+	t.API.mongo.Database(testDbName).Drop(context.Background())
+
+	// Disconnect from MongoDB
+	t.API.mongo.Disconnect(context.Background())
 }
 
 func TestCreateUser(t *testing.T) {
 	// setup
 	a := &TestAPI{}
 	a.setup(false)
+	defer a.teardown()
 
-	t.Run("CreateUser", func(t *testing.T) {
+	t.Run("Should create a user", func(t *testing.T) {
 		// setup
-		body := []byte(`{"name": "Joel", "phoneNumber": "+31612345678"}`)
-		bodyReader := bytes.NewReader(body)
-		req, _ := http.NewRequest("POST", "/api/v1/user", bodyReader)
+		body := mdb.User{Name: "joel", PhoneNumber: "1234567890"}
+		bodyJSON, _ := json.Marshal(&body)
+		req := httptest.NewRequest("POST", "/api/v1/user", bytes.NewReader(bodyJSON))
+		req.Header.Set("Content-Type", "application/json")
 
 		// test
-		resp, err := a.API.app.Test(req)
+		resp, err := a.API.app.Test(req, -1)
 
 		// assert
 		assert.Nil(t, err)
 		assert.Equal(t, 201, resp.StatusCode)
+	})
+
+	t.Run("Should error on duplicate user", func(t *testing.T) {
+		// setup
+		body := mdb.User{Name: "joel", PhoneNumber: "1234567890"}
+		bodyJSON, _ := json.Marshal(&body)
+		req := httptest.NewRequest("POST", "/api/v1/user", bytes.NewReader(bodyJSON))
+		req.Header.Set("Content-Type", "application/json")
+
+		// test
+		resp, err := a.API.app.Test(req, -1)
+
+		// assert
+		assert.Nil(t, err)
+		assert.Equal(t, 409, resp.StatusCode)
 	})
 }

@@ -15,7 +15,7 @@ func getBoolEnv(key string) bool {
 	return os.Getenv(key) == "true"
 }
 
-func setup() *api.API {
+func main() {
 	// Load .env file
 	err := godotenv.Load(".env")
 	if err != nil && !os.IsNotExist(err) {
@@ -54,12 +54,7 @@ func setup() *api.API {
 		}
 	}()
 
-	return api.NewAPI(app, mongo, config)
-}
-
-func main() {
-	// Setup API
-	a := setup()
+	a := api.NewAPI(app, mongo, config)
 
 	// Start server
 	a.StartServer()
