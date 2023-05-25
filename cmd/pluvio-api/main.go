@@ -15,7 +15,7 @@ func getBoolEnv(key string) bool {
 	return os.Getenv(key) == "true"
 }
 
-func main() {
+func setup() *api.API {
 	// Load .env file
 	err := godotenv.Load(".env")
 	if err != nil && !os.IsNotExist(err) {
@@ -26,10 +26,11 @@ func main() {
 	app := fiber.New()
 
 	// Connect to MongoDB
-	mongoConfig := &mdb.MDBConfig{}
-	mongoConfig.DbName = os.Getenv("DB_NAME")
-	mongoConfig.RainCollection = os.Getenv("DB_COLLECTION")
-	mongoConfig.UsersCollection = os.Getenv("USERS_COLLECTION")
+	mongoConfig := &mdb.MDBConfig{
+		DbName: os.Getenv("DB_NAME"),
+		RainCollection: os.Getenv("DB_COLLECTION"),
+		UsersCollection: os.Getenv("USERS_COLLECTION"),
+	}
 
 	log.Println("Connecting to MongoDB")
 	mongo, err := mdb.NewMongoConnection(os.Getenv("MONGO_URL"), mongoConfig)
@@ -53,6 +54,13 @@ func main() {
 		}
 	}()
 
+	return api.NewAPI(app, mongo, config)
+}
+
+func main() {
+	// Setup API
+	a := setup()
+
 	// Start server
-	api.StartServer(app, mongo, config)
+	a.StartServer()
 }
