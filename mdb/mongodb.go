@@ -129,7 +129,7 @@ func (db *MongoDB) CheckUserExists(ctx context.Context, phoneNumber string) bool
 
 // Db function to check if a user has reported today
 func (db *MongoDB) CheckUserReportedToday(ctx context.Context, phoneNumber string) bool {
-	collection := db.Database(db.config.DbName).Collection(db.config.UsersCollection)
+	collection := db.Database(db.config.DbName).Collection(db.config.RainCollection)
 	
 	filter := bson.M{
 		"reportedAt": bson.M{"$gte": primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -1))},
