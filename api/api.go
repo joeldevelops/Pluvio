@@ -62,17 +62,22 @@ func (a *API) setupRoutes() {
 	v1.Post("/user", a.CreateUser)
 }
 
-// Create an API instance, setup routes, and start server
-func StartServer(app *fiber.App, mongo *mdb.MongoDB, config Config) {
+// Create an API instance and setup routes
+func NewAPI(app *fiber.App, mongo *mdb.MongoDB, config Config) *API {
 	a := &API{
-		app: app,
-		mongo: mongo,
-		config: config,
+		app,
+		mongo,
+		config,
 	}
 
 	a.setupRoutes()
 
+	return a
+}
+
+// Start the server
+func (a *API) StartServer() {
 	log.Println("Starting server on port: " + a.config.Port)
 
-	app.Listen(fmt.Sprintf(":%s", a.config.Port))
+	a.app.Listen(fmt.Sprintf(":%s", a.config.Port))
 }

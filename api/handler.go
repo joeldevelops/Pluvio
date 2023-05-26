@@ -115,6 +115,7 @@ func (a *API) GetRainfallAmount(c *fiber.Ctx) error {
 	lang := c.Query("lang", "english")
 	amount, err := a.calculateRainfall(c.Context(), timeRange, location)
 	if err != nil {
+		c.Status(400)
 		msg := buildResponse(c, fmt.Sprintf("Error getting %sly rainfall.", timeRange), -1, lang)
 		sendResponse(c, msg)
 	}
@@ -162,6 +163,14 @@ func (a *API) ReportRain(c *fiber.Ctx) error {
 			msg := buildResponse(c, "Sorry, You have reached the maximum number of reports for today.", -1, lang)
 			return sendResponse(c, msg)
 		}
+	}
+
+	// Check if the amount is negative
+	if data.Amount < 0 {
+		log.Println("negative amount")
+		c.Status(400)
+		msg := buildResponse(c, "Amount cannot be negative", -1, lang)
+		return sendResponse(c, msg)
 	}
 		
 	// Set the reportedAt field to the current time

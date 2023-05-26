@@ -26,10 +26,11 @@ func main() {
 	app := fiber.New()
 
 	// Connect to MongoDB
-	mongoConfig := &mdb.MDBConfig{}
-	mongoConfig.DbName = os.Getenv("DB_NAME")
-	mongoConfig.RainCollection = os.Getenv("DB_COLLECTION")
-	mongoConfig.UsersCollection = os.Getenv("USERS_COLLECTION")
+	mongoConfig := &mdb.MDBConfig{
+		DbName: os.Getenv("DB_NAME"),
+		RainCollection: os.Getenv("DB_COLLECTION"),
+		UsersCollection: os.Getenv("USERS_COLLECTION"),
+	}
 
 	log.Println("Connecting to MongoDB")
 	mongo, err := mdb.NewMongoConnection(os.Getenv("MONGO_URL"), mongoConfig)
@@ -53,6 +54,8 @@ func main() {
 		}
 	}()
 
+	a := api.NewAPI(app, mongo, config)
+
 	// Start server
-	api.StartServer(app, mongo, config)
+	a.StartServer()
 }
