@@ -55,7 +55,7 @@
 
 ## Pluvio API
 
-The backend API for pluvio functionality.
+The backend API for pluvio functionality. The Website/Frontend code is available here: [lds19/Pluvio](https://github.com/lds19/Pluvio)
 
 ## 1. Setup
 
@@ -66,8 +66,7 @@ The backend API for pluvio functionality.
 
 ### 1.1 For Docker Setup (NOT IMPLEMENTED YET):
 
-This is the suggested way for development as it will autobuild/reload when changing
-code.
+TODO
 
 ```
 docker-compose build
